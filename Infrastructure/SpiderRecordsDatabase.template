@@ -1,0 +1,144 @@
+{
+
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Dynamo DB table for spider records and a stream for processing them later",
+
+  "Parameters": {
+    "SpiderMapsStage": {
+      "Type": "String",
+      "Description": "Name of the stage for our API",
+      "NoEcho" : "false"
+    }
+  },
+
+  "Resources": {
+
+    "SpiderMapsDynamo": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "SpiderMapsDynamo",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Guid",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "User",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "Guid",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "User",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      }
+    },
+    "DatabaseURLParameter": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {"Fn::Join": ["", ["/staged/",{"Ref": "SpiderMapsStage"},"/spiderrecordsdbarn"]]},
+        "Type": "String",
+        "Value": {"Fn::GetAtt": ["SpiderMapsDynamo", "Arn"]}
+        }
+    },
+    "DatabaseNameParameter": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {"Fn::Join": ["", ["/staged/",{"Ref": "SpiderMapsStage"},"/spiderrecordsdbname"]]},
+        "Type": "String",
+        "Value": "SpiderMapsDynamo"
+        }
+    },
+    "SpiderMapsDynamoAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName" : {"Fn::Join": [ "_", ["SpiderMapsDynamoAccessPolicy", {"Ref": "SpiderMapsStage"}]]},
+        "PolicyDocument" : {
+          
+                  "Version": "2012-10-17",
+                  "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": {"Fn::GetAtt": ["SpiderMapsDynamo","Arn"]}
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:DescribeStream",
+                                        "dynamodb:ListStreams"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                
+        }
+      }
+    }
+  },
+
+  "Outputs": {
+    "DyanmoDBName": {
+      "Description": "Name of the database",
+      "Value": { "Ref": "SpiderMapsDynamo" },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              { "Ref": "AWS::StackName" },
+              "DynamoDBName"
+            ]
+          ]
+        }
+      }
+    },
+    "DynamoDBArn": {
+      "Description": "Arn of the database",
+      "Value": {
+        "Fn::GetAtt": [ "SpiderMapsDynamo", "Arn" ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              { "Ref": "AWS::StackName" },
+              "DynamoDBArn"
+            ]
+          ]
+        }
+      }
+    },
+    "DynamoAccessPolicy": {
+      "Value": {"Ref": "SpiderMapsDynamoAccessPolicy"},
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              { "Ref": "AWS::StackName" },
+              "DynamoAccessPolicy"
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

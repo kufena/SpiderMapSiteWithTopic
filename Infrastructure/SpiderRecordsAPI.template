@@ -1,0 +1,175 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  "Parameters": {
+    "SpiderMapsDynamo": {
+      "Type": "String",
+      "Description" : "Name of stack where the Dynamo DB is declared along with its stream"
+    },
+    "SpiderMapsSNS": {
+      "Type": "String",
+      "Description": "Name of stack where the SNS topic is declared."
+    },
+    "SpiderMapsStage": {
+      "Type": "String",
+      "Description": "Name of the stage for our API"
+    }
+  },
+  "Resources": {
+    "SpiderMapsDynamoAccessRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "SpiderMapsDynamoAccessRole",
+        "ManagedPolicyArns" : [
+          {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsDynamo"},"DynamoAccessPolicy"]]}}
+        ],
+        "AssumeRolePolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                      ]
+        }
+      }
+    },
+    "SpiderRecordsAPI": {
+      "Type": "AWS::Serverless::Api",
+      "Properties" : {
+       "Name" : "SpiderRecordsAPI",
+       "StageName": {"Fn::Sub": "${SpiderMapsStage}"},
+       "MethodSettings" : [
+         {
+            "ResourcePath": "/~1{guid}",
+            "HttpMethod": "GET"
+         },
+         {
+            "ResourcePath": "/~1{guid}",
+            "HttpMethod": "PUT"
+         },
+         {
+            "ResourcePath": "/~1{guid}",
+            "HttpMethod": "DELETE"
+         },
+         {
+            "ResourcePath": "/~1",
+            "HttpMethod": "POST"
+         }
+       ]
+      }
+    },
+    "Get": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Get",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["SpiderMapsDynamoAccessRole", "Arn"] },
+        "Environment" : { "Variables": {"Stage": {"Ref": "SpiderMapsStage"}}},
+        "Events": {
+          "GuidGet": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/{guid}",
+              "Method": "GET",
+              "RestApiId" : {"Ref": "SpiderRecordsAPI"}
+            }
+          }
+        }
+      }
+    },
+    "Put": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Put",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["SpiderMapsDynamoAccessRole", "Arn"] },
+        "Environment" : { "Variables": {"Stage": {"Ref": "SpiderMapsStage"}}},
+        "Events": {
+          "RootPut": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/{guid}",
+              "Method": "PUT",
+              "RestApiId" : {"Ref": "SpiderRecordsAPI"}
+            }
+          }
+        }
+      }
+    },
+    "Delete": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Delete",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["SpiderMapsDynamoAccessRole", "Arn"] },
+        "Environment" : { "Variables": {"Stage": {"Ref": "SpiderMapsStage"}}},
+        "Events": {
+          "RootDelete": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/{guid}",
+              "Method": "DELETE",
+              "RestApiId" : {"Ref": "SpiderRecordsAPI"}
+            }
+          }
+        }
+      }
+    },
+    "Post": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Post",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": { "Fn::GetAtt": ["SpiderMapsDynamoAccessRole", "Arn"] },
+        "Environment" : { 
+          "Variables": {
+             "Stage": {"Ref": "SpiderMapsStage"}, 
+             "SQSURL": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSQS"},"QueueURL"]]}}
+          }
+        },
+        "Events": {
+          "RootPost": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/",
+              "Method": "POST",
+              "RestApiId" : {"Ref": "SpiderRecordsAPI"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API endpoint URL for Prod environment",
+      "Value": {
+        "Fn::Sub": "https://${SpiderRecordsAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+      },
+      "Export": {
+        "Name": {"Fn::Join": [":", [{"Ref": "AWS::StackName"}, "SpiderRecordsApiURL"]]}
+      }
+    }
+  }
+}

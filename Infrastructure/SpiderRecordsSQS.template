@@ -1,0 +1,52 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+
+	"Description" : "SQS for spider records API to signal the requirement to create grid references.",
+
+	"Parameters" : {
+	},
+
+	"Resources" : {
+	  "SpiderRecordsSQS": {
+	    "Type": "AWS::SQS::Queue",
+		"Properties": {
+		  "QueueName" : "SpiderRecordsSQS"
+		}
+	  },
+	  "SpiderRecordsSQSPolicy": {
+	    "Type": "AWS::IAM::ManagedPolicy",
+		"Properties": {
+		  "ManagedPolicyName": "SpiderRecordsSQSPolicy",
+		  "PolicyDocument": {
+		          "Version": "2012-10-17",
+                  "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": {"Fn::GetAtt": ["SpiderRecordsSQS","Arn"]}
+                                }
+                            ]
+		  }
+		}
+	  }
+	},
+
+	"Outputs" : {
+	  "QueueURL": {
+	    "Value": {"Ref": "SpiderRecordsSQS"},
+		"Export": { "Name": {"Fn::Join": [":", [{"Ref": "AWS::StackName"}, "QueueURL"]]}}
+	  },
+	  "QueueArn": {
+	    "Value": {"Fn::GetAtt": ["SpiderRecordsSQS","Arn"]},
+		"Export": { "Name": {"Fn::Join": [":", [{"Ref": "AWS::StackName"}, "QueueArn"]]}}
+	  },
+	  "QueueName": {
+		"Value": {"Fn::GetAtt": ["SpiderRecordsSQS","QueueName"]},
+		"Export": { "Name": {"Fn::Join": [":", [{"Ref": "AWS::StackName"}, "QueueName"]]}}
+	  },
+	  "QueueManagedPolicy": {
+	    "Value": {"Ref": "SpiderRecordsSQSPolicy"},
+		"Export": { "Name": {"Fn::Join": [":", [{"Ref": "AWS::StackName"}, "QueueManagedPolicy"]]}}
+	  }
+	}
+}

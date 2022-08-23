@@ -1,0 +1,11 @@
+aws cloudformation create-stack --template-body file://.\SpiderRecordsDatabase.template --stack-name SpiderRecordsDB --parameters ParameterKey=SpiderMapsStage,ParameterValue=Dev --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
+aws cloudformation create-stack --template-body file://.\SpiderRecordsSQS.template --stack-name SpiderRecordsSQS --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
+aws cloudformation create-stack --stack-name TopicStack --template-body file://.\Topic.template
+
+dotnet lambda package SpeciesRecordLambda.zip
+dotnet lambda deploy-serverless --template ..\Infrastructure\SpiderRecordsAPI.template -sb <upload bucket> --stack-name SpiderRecordsAPI --package SpeciesRecordLambda.zip --template-parameters 'SpiderMapsStage=Dev;SpiderMapsSQS=SpiderRecordsSQS;SpiderMapsDynamo=SpiderRecordsDB' --capabilities CAPABILITY_AUTO_EXPAND --region eu-west-2
+
+aws cloudformation create-stack --template-body file://.\RecordGridRefDatabase.template --stack-name SpiderRecordGridRefssDB --parameters ParameterKey=SpiderMapsStage,ParameterValue=Dev --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
+
+dotnet lambda package SRAGR.zip
+dotnet lambda deploy-serverless GridRefTopicSubscriber -t ..\Infrastructure\GridRefsQueueLambda.template -pac .\SRAGR.zip -tp 'SNSQueueStack=TopicStack;DBStack=SpiderRecordsGridRefssDB' --region eu-west-2

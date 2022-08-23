@@ -1,0 +1,31 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+
+	"Description" : "",
+
+	"Parameters" : {
+	},
+
+	"Resources" : {
+	  "SpiderMapSiteTopic": {
+	    "Type": "AWS::SNS::Topic",
+		"Properties": {
+		}
+	  }
+	},
+
+	"Outputs" : {
+	  "TopicArn": {
+	    "Value" : {"Ref": "SpiderMapSiteTopic"},
+	    "Export": {
+	       "Name" : {"Fn::Sub": "${AWS::StackName}:TopicArn"}
+	    }
+	  },
+	  "TopicName": {
+	    "Value": {"Fn::GetAtt": ["SpiderMapSiteTopic","TopicName"]},
+		"Export": {
+		  "Name": {"Fn::Sub": "${AWS::StackName}:TopicName"}
+		}
+	  }
+	}
+}

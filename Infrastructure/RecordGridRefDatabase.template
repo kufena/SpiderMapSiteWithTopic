@@ -1,0 +1,174 @@
+{
+
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Dynamo DB table for spider record Grid Refs.",
+
+  "Parameters": {
+    "SpiderMapsStage": {
+      "Type": "String",
+      "Description": "Name of the stage for our API",
+      "NoEcho" : "false"
+    }
+  },
+
+  "Resources": {
+
+    "SpiderGridRefDynamo": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "SpiderGridRefDynamo",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "GridRefSixFigure",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "GridRefFourFigure",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "Guid",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "GridRefSixFigure",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "GlobalSecondaryIndexes" : [
+          {
+            "IndexName" : "FourFigureGridRefIndex",
+            "KeySchema" : [
+              {
+                "AttributeName" : "GridRefFourFigure",
+                "KeyType" : "HASH"
+              }
+            ],
+            "Projection" : {
+             "NonKeyAttributes" : ["Guid"],
+              "ProjectionType" : "INCLUDE"
+            },
+             "ProvisionedThroughput" : { "ReadCapacityUnits" : 5, "WriteCapacityUnits" : 5 }
+          },
+          {
+           "IndexName" : "GuidGridRefIndex",
+            "KeySchema" : [
+              {
+                "AttributeName" : "Guid",
+                "KeyType" : "HASH"
+              }
+            ],
+             "Projection" : {
+              "NonKeyAttributes" : ["GridRefSixFigure","GridRefFourFigure"],
+               "ProjectionType" : "INCLUDE"
+              },
+             "ProvisionedThroughput" : { "ReadCapacityUnits" : 5, "WriteCapacityUnits" : 5 }
+          }
+        ]
+      }
+    },
+    "DatabaseURLParameter": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {"Fn::Join": ["", ["/staged/",{"Ref": "SpiderMapsStage"},"/spiderrecordgridrefsdbarn"]]},
+        "Type": "String",
+        "Value": {"Fn::GetAtt": ["SpiderGridRefDynamo", "Arn"]}
+        }
+    },
+    "DatabaseNameParameter": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": {"Fn::Join": ["", ["/staged/",{"Ref": "SpiderMapsStage"},"/spiderrecordgridrefsdbname"]]},
+        "Type": "String",
+        "Value": "SpiderMapsDynamo"
+        }
+    },
+    "SpiderGridRefDynamoAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName" : {"Fn::Join": [ "_", ["SpiderGridRefDynamoAccessPolicy", {"Ref": "SpiderMapsStage"}]]},
+        "PolicyDocument" : {
+          
+                  "Version": "2012-10-17",
+                  "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": {"Fn::GetAtt": ["SpiderGridRefDynamo","Arn"]}
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:DescribeStream",
+                                        "dynamodb:ListStreams"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                
+        }
+      }
+    }
+  },
+
+  "Outputs": {
+    "DyanmoDBName": {
+      "Description": "Name of the database",
+      "Value": { "Ref": "SpiderGridRefDynamo" },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              { "Ref": "AWS::StackName" },
+              "DynamoDBName"
+            ]
+          ]
+        }
+      }
+    },
+    "DynamoDBArn": {
+      "Description": "Arn of the database",
+      "Value": {
+        "Fn::GetAtt": [ "SpiderGridRefDynamo", "Arn" ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              { "Ref": "AWS::StackName" },
+              "DynamoDBArn"
+            ]
+          ]
+        }
+      }
+    },
+    "DynamoAccessPolicy": {
+      "Value": {"Ref": "SpiderGridRefDynamoAccessPolicy"},
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              { "Ref": "AWS::StackName" },
+              "SpiderGridRefDynamoAccessPolicy"
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

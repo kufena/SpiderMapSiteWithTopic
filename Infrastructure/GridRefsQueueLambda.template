@@ -1,0 +1,105 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Transform": "AWS::Serverless-2016-10-31",
+
+	"Description" : "",
+
+	"Parameters" : {
+	  "SNSQueueStack": {
+        "Type": "String",
+        "Description" : "Name of stack where the SNS Topic is declared along with its stream"
+      },
+	  "DBStack": {
+	    "Type": "String",
+		"Description": "Name of stack declaring the db table."
+	  }
+	},
+
+	"Resources" : {
+	  "GridRefSpiderRecordsSubscribeSQS": {
+	    "Type": "AWS::SQS::Queue", 
+		"Properties": {
+		 "QueueName" : "GridRefSpiderRecordsSubscribeSQS"
+		}
+	  },
+	  "GridRefSQSAccessPolicy": {
+	    "Type": "AWS::IAM::ManagedPolicy",
+	    "DependsOn" : "GridRefSpiderRecordsSubscribeSQS",
+		"Properties": {
+		 "ManagedPolicyName" : "GridRefSQSAccessPolicy",
+		 "PolicyDocument": {
+		          "Version": "2012-10-17",
+                  "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": {"Fn::GetAtt": ["GridRefSpiderRecordsSubscribeSQS","Arn"]}
+                                }
+                            ]
+		  }
+		}
+	  },
+	  "GridRefSQSToSNSSubscription": {
+	    "Type": "AWS::SNS::Subscription",
+		"Properties": {
+		   "Endpoint":{"Fn::GetAtt": ["GridRefSpiderRecordsSubscribeSQS","Arn"]},
+		   "Protocol" : "sqs",
+		   "TopicArn" : {"Fn::ImportValue": {"Fn::Sub": "${SNSQueueStack}:TopicArn"}},
+		   "RawMessageDelivery" : true
+		 }
+	  },
+	  "GridRefsLambdaRole": {
+	    "Type": "AWS::IAM::Role",
+		"Properties": {
+		"ManagedPolicyArns" : [
+		  "GridRefSQSAccessPolicy",
+		  {"Fn::ImportValue": {"Fn::Sub": "${DBStack}:SpiderGridRefDynamoAccessPolicy"}}
+		],
+        "AssumeRolePolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                      ]
+        }
+		}
+	  },
+	  "GridRefsSQSLambda": {
+	    "Type": "AWS::Serverless::Function",
+		"Properties": {
+		  "Runtime" : "dotnet6",
+		  "FunctionName" : "GridRefsSQSLambda",
+		  "CodeUri" : "",
+		  "Environment" : { 
+		    "Variables": {
+		       "TableName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "DBStack"},"DynamoDBName"]]}}, 
+               "SNSArn": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SNSQueueStack"},"TopicArn"]]}}
+		    }
+		  },
+		  "Role": {"Fn::GetAtt": ["GridRefsLambdaRole","Arn"]},
+		  "Timeout" : 10,
+		  "Handler": "SpeciesRecordAddGridRefs::SpeciesRecordAddGridRefs.Function::FunctionHandler",
+		  "Events" : {
+			"SpiderRecordEvents" : {
+			  "Type" : "SQS",
+			  "Properties" : {
+			     "Queue" : {"Fn::GetAtt": ["GridRefSpiderRecordsSubscribeSQS","Arn"]}
+			  }
+			}
+		  }
+		}
+	  }
+	},
+
+	"Outputs" : {
+	}
+}
