@@ -7,6 +7,8 @@ Project("{22325025-CDA3-4736-83CB-2D32D2FCC215}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeciesRecordAddGridRefs", "SpeciesRecordAddGridRefs\SpeciesRecordAddGridRefs.csproj", "{1C2A9665-23F9-435E-8B5D-53B1866433AE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderRecordsAPI", "SpiderRecordsAPI\SpiderRecordsAPI.csproj", "{480B0036-F912-4E16-AC15-EAA032673A9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{1C2A9665-23F9-435E-8B5D-53B1866433AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C2A9665-23F9-435E-8B5D-53B1866433AE}.Release|x86.ActiveCfg = Release|Any CPU
 		{1C2A9665-23F9-435E-8B5D-53B1866433AE}.Release|x86.Build.0 = Release|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Debug|x86.Build.0 = Debug|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Release|x86.ActiveCfg = Release|Any CPU
+		{480B0036-F912-4E16-AC15-EAA032673A9A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

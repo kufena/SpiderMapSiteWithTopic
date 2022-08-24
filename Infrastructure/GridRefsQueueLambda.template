@@ -23,10 +23,34 @@
 		}
 	  },
 	  "GridRefSQSAccessPolicy": {
+	    "Type": "AWS::SQS::QueuePolicy",
+		"Properties": {
+		  "PolicyDocument" : { 
+		    "Version": "2012-10-17",
+            "Statement": [
+                         {
+                            "Effect": "Allow",
+                            "Action": "sqs:SendMessage",
+                            "Resource": {"Fn::GetAtt": ["GridRefSpiderRecordsSubscribeSQS","Arn"]},
+							"Principal": {
+							  "AWS": "*"
+							},
+							"Condition": {
+							  "ArnEquals": {
+							    "aws:SourceArn": {"Fn::ImportValue": {"Fn::Sub": "${SNSQueueStack}:TopicArn"}}
+							  }
+							}
+                         }
+                         ]
+		  },
+		  "Queues" : ["GridRefSpiderRecordsSubscribeSQS"]
+		}
+	  },
+	  "GridRefSQSServicePolicy": {
 	    "Type": "AWS::IAM::ManagedPolicy",
 	    "DependsOn" : "GridRefSpiderRecordsSubscribeSQS",
 		"Properties": {
-		 "ManagedPolicyName" : "GridRefSQSAccessPolicy",
+		 "ManagedPolicyName" : "GridRefSQSServicePolicy",
 		 "PolicyDocument": {
 		          "Version": "2012-10-17",
                   "Statement": [
@@ -50,10 +74,11 @@
 	  },
 	  "GridRefsLambdaRole": {
 	    "Type": "AWS::IAM::Role",
+		"DependsOn": "GridRefSQSServicePolicy",
 		"Properties": {
 		"ManagedPolicyArns" : [
-		  "GridRefSQSAccessPolicy",
-		  {"Fn::ImportValue": {"Fn::Sub": "${DBStack}:SpiderGridRefDynamoAccessPolicy"}}
+		  {"Fn::ImportValue": {"Fn::Sub": "${DBStack}:SpiderGridRefDynamoAccessPolicy"}},
+		  {"Ref": "GridRefSQSServicePolicy"}
 		],
         "AssumeRolePolicyDocument" : {
           "Version": "2012-10-17",
@@ -70,7 +95,8 @@
                             ]
                         }
                       ]
-        }
+			
+        }		
 		}
 	  },
 	  "GridRefsSQSLambda": {
@@ -85,7 +111,7 @@
                "SNSArn": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SNSQueueStack"},"TopicArn"]]}}
 		    }
 		  },
-		  "Role": {"Fn::GetAtt": ["GridRefsLambdaRole","Arn"]},
+		  "Role": {"Fn::GetAtt": ["GridRefsLambdaRole","Arn"]}
 		  "Timeout" : 10,
 		  "Handler": "SpeciesRecordAddGridRefs::SpeciesRecordAddGridRefs.Function::FunctionHandler",
 		  "Events" : {
