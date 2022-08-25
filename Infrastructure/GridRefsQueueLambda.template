@@ -111,7 +111,7 @@
                "SNSArn": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SNSQueueStack"},"TopicArn"]]}}
 		    }
 		  },
-		  "Role": {"Fn::GetAtt": ["GridRefsLambdaRole","Arn"]}
+		  "Role": {"Fn::GetAtt": ["GridRefsLambdaRole","Arn"]},
 		  "Timeout" : 10,
 		  "Handler": "SpeciesRecordAddGridRefs::SpeciesRecordAddGridRefs.Function::FunctionHandler",
 		  "Events" : {
