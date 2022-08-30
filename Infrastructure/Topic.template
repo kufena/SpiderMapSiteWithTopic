@@ -1,7 +1,7 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
 
-	"Description" : "",
+	"Description" : "The Over-arching Topic used in this system, to store records and produce additional info like grid refs.",
 
 	"Parameters" : {
 	},
