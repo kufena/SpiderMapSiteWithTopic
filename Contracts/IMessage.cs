@@ -9,6 +9,5 @@ namespace Contracts
     internal interface IMessage
     {
         public string ToJson();
-        public IMessage FromJson(string json);
     }
 }

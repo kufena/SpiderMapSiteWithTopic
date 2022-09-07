@@ -1,16 +1,57 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
 
 	"Description" : "SQS for spider records API to signal the requirement to create grid references.",
 
 	"Parameters" : {
+	  "SNSQueueStack": {
+	   "Type" : "String",
+	   "Description": "Topic stack name for over all SNS topic"
+	  },
+	  "SpiderRecordsDBStack": {
+	    "Type": "String",
+		"Description": "Stack declaring the database for this service."
+	  }
 	},
-
 	"Resources" : {
 	  "SpiderRecordsSQS": {
 	    "Type": "AWS::SQS::Queue",
 		"Properties": {
 		  "QueueName" : "SpiderRecordsSQS"
+		}
+	  },
+	  "SpiderRecordsSQSAccessPolicy": {
+	    "Type": "AWS::SQS::QueuePolicy",
+		"Properties": {
+		  "PolicyDocument" : { 
+		    "Version": "2012-10-17",
+            "Statement": [
+                         {
+                            "Effect": "Allow",
+                            "Action": "sqs:SendMessage",
+                            "Resource": {"Fn::GetAtt": ["SpiderRecordsSQS","Arn"]},
+							"Principal": {
+							  "AWS": "*"
+							},
+							"Condition": {
+							  "ArnEquals": {
+							    "aws:SourceArn": {"Fn::ImportValue": {"Fn::Sub": "${SNSQueueStack}:TopicArn"}}
+							  }
+							}
+                         }
+                         ]
+		  },
+		  "Queues" : ["SpiderRecordsSQS"]
+		}
+	  },
+	  "TopicSubscription": {
+	    "Type": "AWS::SNS::Subscription",
+		"Properties": {
+		  "Endpoint":{"Fn::GetAtt": ["SpiderRecordsSQS","Arn"]},
+		  "Protocol" : "sqs",
+		  "TopicArn" : {"Fn::ImportValue": {"Fn::Sub": "${SNSQueueStack}:TopicArn"}},
+		  "RawMessageDelivery" : true
 		}
 	  },
 	  "SpiderRecordsSQSPolicy": {
@@ -26,6 +67,58 @@
                                     "Resource": {"Fn::GetAtt": ["SpiderRecordsSQS","Arn"]}
                                 }
                             ]
+		  }
+		}
+	  },
+	  "SpiderRecordsSQSLambdaRole": {
+	    "Type": "AWS::IAM::Role",
+		"DependsOn": "SpiderRecordsSQSPolicy",
+		"Properties": {
+		"ManagedPolicyArns" : [
+		  {"Fn::ImportValue": {"Fn::Sub": "${SpiderRecordsDBStack}:DynamoAccessPolicy"}},
+		  {"Ref": "SpiderRecordsSQSPolicy"}
+		],
+        "AssumeRolePolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                      ]
+			
+        }		
+		}
+	  },
+	  "SpiderRecordsWriteLambda": {
+	    "Type": "AWS::Serverless::Function",
+		"Properties": {
+		  "Runtime" : "dotnet6",
+		  "FunctionName" : "SpiderRecordsWriteLambda",
+		  "CodeUri" : "",
+		  "Handler" : "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordWriteLambda::Handler",
+		  "Role": {"Fn::GetAtt": ["SpiderRecordsSQSLambdaRole", "Arn"]},
+		  "Timeout": 5,
+		  "Environment": {
+		    "Variables" : {
+			  "SpiderRecordsDBName": {"Fn::ImportValue": {"Fn::Sub": "${SpiderRecordsDBStack}:DynamoDBName"}},
+			  "QueueURL": {"Ref": "SpiderRecordsSQS"}
+		    }
+		  },
+		  "Events": {
+		   "SpiderRecordsWriteLambdaEvents" : {
+		       "Type" : "SQS",
+		       "Properties" : {
+		           "Queue" : {"Fn::GetAtt": ["SpiderRecordsSQS","Arn"]}
+		       }
+		    }
 		  }
 		}
 	  }

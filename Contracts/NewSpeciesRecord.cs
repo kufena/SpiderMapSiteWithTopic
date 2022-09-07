@@ -8,18 +8,13 @@ using Models;
 
 namespace Contracts
 {
-    internal class NewSpeciesRecord : IMessage
+    public class NewSpeciesRecord : IMessage
     {
-        public SpeciesRecord Record { init; get; }
+        public SpeciesRecordWithId Record { init; get; }
 
-        public NewSpeciesRecord(SpeciesRecord record)
+        public NewSpeciesRecord(SpeciesRecordWithId record)
         {
             Record = record;
-        }
-
-        public IMessage FromJson(string json)
-        {
-            throw new NotImplementedException();
         }
 
         public string ToJson()

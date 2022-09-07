@@ -16,13 +16,19 @@ namespace SpiderRecordsAPI;
 public class Function
 {
     AmazonSimpleNotificationServiceClient SNSClient;
-    string SNSTopicEnvironmentName = "";
+    string SNSTopicEnvironmentName = "TopicArn";
     string TopicArn = "";
 
     public Function()
     {
         SNSClient = new AmazonSimpleNotificationServiceClient();
-        Environment.GetEnvironmentVariable(SNSTopicEnvironmentName);
+        var s = Environment.GetEnvironmentVariable(SNSTopicEnvironmentName);
+        if (s == null)
+        {
+            throw new Exception("No environment variable set for TopicArn");
+        }
+
+        TopicArn = s;
     }
 
     /// <summary>
@@ -47,8 +53,17 @@ public class Function
         string newId = Guid.NewGuid().ToString();
 
         SpeciesRecordWithId srwi = new SpeciesRecordWithId(newId, speciesRecord);
+        var contract = new NewSpeciesRecord(srwi);
+        int responseCode = await PushToTopic(contract);
 
-        int responseCode = await PushToTopic(srwi);
+        if (responseCode != (int)HttpStatusCode.OK)
+        {
+            return new APIGatewayProxyResponse()
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                Body = "Failed to distribute message"
+            };
+        }
 
         return new APIGatewayProxyResponse()
         {
@@ -57,7 +72,7 @@ public class Function
         };
     }
 
-    private async Task<int> PushToTopic(SpeciesRecordWithId record) {
+    private async Task<int> PushToTopic(NewSpeciesRecord record) {
         var body = JsonSerializer.Serialize(record);
         PublishRequest request = new PublishRequest(TopicArn, body);
         var response = await SNSClient.PublishAsync(request);

@@ -17,12 +17,27 @@
     }
   },
   "Resources": {
+    "SpiderRecordsAPITopicAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName" : "SpiderRecordsAPITopicAccessPolicy",
+        "PolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Action": "sns:*",
+            "Resource": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicArn"]]}}
+          }
+        }
+      }
+    },
     "SpiderMapsDynamoAccessRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "RoleName": "SpiderMapsDynamoAccessRole",
         "ManagedPolicyArns" : [
-          {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsDynamo"},"DynamoAccessPolicy"]]}}
+          {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsDynamo"},"DynamoAccessPolicy"]]}},
+          {"Ref": "SpiderRecordsAPITopicAccessPolicy"}
         ],
         "AssumeRolePolicyDocument" : {
           "Version": "2012-10-17",
@@ -70,7 +85,7 @@
     "Get": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Get",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::Get",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -92,7 +107,7 @@
     "Put": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Put",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::Put",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -114,7 +129,7 @@
     "Delete": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Delete",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::Delete",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -136,7 +151,7 @@
     "Post": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpeciesRecordLambda::SpeciesRecordLambda.Functions::Post",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::PostHandler",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -145,7 +160,8 @@
         "Environment" : { 
           "Variables": {
              "Stage": {"Ref": "SpiderMapsStage"}, 
-             "SQSURL": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSQS"},"QueueURL"]]}}
+             "TopicArn": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicArn"]]}}, 
+             "TopicName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicName"]]}}
           }
         },
         "Events": {
