@@ -1,11 +1,8 @@
-aws cloudformation create-stack --template-body file://.\SpiderRecordsDatabase.template --stack-name SpiderRecordsDB --parameters ParameterKey=SpiderMapsStage,ParameterValue=Dev --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
-aws cloudformation create-stack --template-body file://.\SpiderRecordsSQS.template --stack-name SpiderRecordsSQS --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
-aws cloudformation create-stack --stack-name TopicStack --template-body file://.\Topic.template
+ 
+ There's an S3 bucket required for the SAM commands.
+ I sometimes give a stage name - I haven't quite worked this out, but it might be useful.
 
-dotnet lambda package SpeciesRecordLambda.zip
-dotnet lambda deploy-serverless --template ..\Infrastructure\SpiderRecordsAPI.template -sb <upload bucket> --stack-name SpiderRecordsAPI --package SpeciesRecordLambda.zip --template-parameters 'SpiderMapsStage=Dev;SpiderMapsSQS=SpiderRecordsSQS;SpiderMapsDynamo=SpiderRecordsDB' --capabilities CAPABILITY_AUTO_EXPAND --region eu-west-2
-
-aws cloudformation create-stack --template-body file://.\RecordGridRefDatabase.template --stack-name SpiderRecordGridRefssDB --parameters ParameterKey=SpiderMapsStage,ParameterValue=Dev --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
-
-dotnet lambda package SRAGR.zip
-dotnet lambda deploy-serverless GridRefTopicSubscriber -t ..\Infrastructure\GridRefsQueueLambda.template -pac .\SRAGR.zip -tp 'SNSQueueStack=TopicStack;DBStack=SpiderRecordsGridRefssDB' --region eu-west-2
+ aws cloudformation create-stack --stack-name MainTopic --template-body file://..\Infrastructure\Topic.template --region eu-west-2
+ aws cloudformation create-stack --stack-name SpiderRecordsDatabase --template-body file://.\SpiderRecordsDatabase.template --parameters ParameterKey=SpiderMapsStage,ParameterValue=Dev --capabilities CAPABILITY_NAMED_IAM --region eu-west-2
+ dotnet lambda deploy-serverless SpiderRecordsSQS -t .\SpiderRecordsSQS.template -sb <s3bucket> -tp 'SNSQueueStack=MainTopic;SpiderRecordsDBStack=SpiderRecordsDatabase' --region eu-west-2
+ dotnet lambda deploy-serverless SpiderRecordsAPI -t .\SpiderRecordsAPI.template -sb <s3bucket> -tp 'SpiderMapsSNS=MainTopic;SpiderMapsDynamo=SpiderRecordsDatabase;SpiderMapsStage=Dev' --region eu-west-2
