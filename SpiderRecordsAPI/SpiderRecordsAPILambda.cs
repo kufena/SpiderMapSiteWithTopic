@@ -13,13 +13,13 @@ using Models;
 
 namespace SpiderRecordsAPI;
 
-public class Function
+public class SpiderRecordsAPILambda
 {
     AmazonSimpleNotificationServiceClient SNSClient;
     string SNSTopicEnvironmentName = "TopicArn";
     string TopicArn = "";
 
-    public Function()
+    public SpiderRecordsAPILambda()
     {
         SNSClient = new AmazonSimpleNotificationServiceClient();
         var s = Environment.GetEnvironmentVariable(SNSTopicEnvironmentName);

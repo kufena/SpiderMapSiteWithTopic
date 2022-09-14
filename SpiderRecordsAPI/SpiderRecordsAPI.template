@@ -85,7 +85,7 @@
     "Get": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::Get",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::Get",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -107,7 +107,7 @@
     "Put": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::Put",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::Put",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -129,7 +129,7 @@
     "Delete": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::Delete",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::Delete",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -151,7 +151,7 @@
     "Post": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.Function::PostHandler",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::PostHandler",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,

@@ -36,11 +36,46 @@ namespace SpiderRecordsAPI
             QueueURL = qenv;
         }
 
-        public async Task Handler(SQSEvent messages, ILambdaContext context)
+        //public async Task Handler(SQSEvent messages, ILambdaContext context)
+        //{
+        //    var logger = context.Logger;
+        //    logger.LogError($"We're in the Handler of SpiderRecordWriteLambda - with {messages.Records.Count} messages.");
+        //    AmazonSQSClient sqsClient = new AmazonSQSClient();
+        //    int numMessages = messages.Records.Count;
+        //    int completed = 0;
+        //    foreach (var message in messages.Records)
+        //    {
+        //        var done = await HandleMessage(message, logger);
+        //        if (done)
+        //        {
+        //            logger.LogError($"Event source: {message.EventSource}");
+        //            logger.LogError($"Event source Arn: {message.EventSourceArn}");
+        //            var deleteResponse = await sqsClient.DeleteMessageAsync(QueueURL, message.ReceiptHandle);
+        //            if (deleteResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
+        //            {
+        //                completed++;
+        //            }
+        //            else
+        //            {
+        //                logger.LogError($"Removing message from SQS Queue {message.EventSource} failed.");
+        //            }
+        //        }
+        //    }
+
+        //    logger.LogInformation($"Passed {numMessages} messages, completed {completed}");
+        //    await Task.CompletedTask;
+        //}
+
+        public async Task<SQSBatchResponse> BatchHandler(SQSEvent messages, ILambdaContext context)
         {
             var logger = context.Logger;
             logger.LogError($"We're in the Handler of SpiderRecordWriteLambda - with {messages.Records.Count} messages.");
-            AmazonSQSClient sqsClient = new AmazonSQSClient();
+
+            var response = new SQSBatchResponse()
+            {
+                BatchItemFailures = new List<SQSBatchResponse.BatchItemFailure>()
+            };
+
             int numMessages = messages.Records.Count;
             int completed = 0;
             foreach (var message in messages.Records)
@@ -50,20 +85,16 @@ namespace SpiderRecordsAPI
                 {
                     logger.LogError($"Event source: {message.EventSource}");
                     logger.LogError($"Event source Arn: {message.EventSourceArn}");
-                    var deleteResponse = await sqsClient.DeleteMessageAsync(QueueURL, message.ReceiptHandle);
-                    if (deleteResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        completed++;
-                    }
-                    else
-                    {
-                        logger.LogError($"Removing message from SQS Queue {message.EventSource} failed.");
-                    }
+                    completed++;
+                }
+                else
+                {
+                    response.BatchItemFailures.Add(new SQSBatchResponse.BatchItemFailure() { ItemIdentifier = message.MessageId });
                 }
             }
 
             logger.LogInformation($"Passed {numMessages} messages, completed {completed}");
-            await Task.CompletedTask;
+            return response;
         }
 
         public async Task<Boolean> HandleMessage(SQSEvent.SQSMessage message, ILambdaLogger logger)

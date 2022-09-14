@@ -103,7 +103,7 @@
 		  "Runtime" : "dotnet6",
 		  "FunctionName" : "SpiderRecordsWriteLambda",
 		  "CodeUri" : "",
-		  "Handler" : "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordWriteLambda::Handler",
+		  "Handler" : "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordWriteLambda::BatchHandler",
 		  "Role": {"Fn::GetAtt": ["SpiderRecordsSQSLambdaRole", "Arn"]},
 		  "Timeout": 5,
 		  "Environment": {
