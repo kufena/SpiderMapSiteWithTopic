@@ -12,5 +12,3 @@ This is what allows for the decoupling, I guess - the queue itself is allowing t
 required to the topic itself.
 
 I guess the next step would be build a state machine using step functions.  We'll do this first.
-
-Added to test signed commits.
