@@ -85,13 +85,20 @@
     "Get": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::Get",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::GetHandler",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
         "Role": { "Fn::GetAtt": ["SpiderMapsDynamoAccessRole", "Arn"] },
-        "Environment" : { "Variables": {"Stage": {"Ref": "SpiderMapsStage"}}},
+        "Environment" : { 
+          "Variables": {
+             "Stage": {"Ref": "SpiderMapsStage"}, 
+             "TopicArn": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicArn"]]}}, 
+             "TopicName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicName"]]}},
+             "TableName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsDynamo"},"DynamoDBName"]]}}
+          }
+        },
         "Events": {
           "GuidGet": {
             "Type": "Api",
@@ -107,7 +114,7 @@
     "Put": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::Put",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::PutHandler",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -129,7 +136,7 @@
     "Delete": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::Delete",
+        "Handler": "SpiderRecordsAPI::SpiderRecordsAPI.SpiderRecordsAPILambda::DeleteHandler",
         "Runtime": "dotnet6",
         "CodeUri": "",
         "MemorySize": 256,
@@ -161,7 +168,9 @@
           "Variables": {
              "Stage": {"Ref": "SpiderMapsStage"}, 
              "TopicArn": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicArn"]]}}, 
-             "TopicName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicName"]]}}
+             "TopicName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsSNS"},"TopicName"]]}},
+             "TableName": {"Fn::ImportValue": {"Fn::Join": [":", [{"Ref": "SpiderMapsDynamo"},"DynamoDBName"]]}}
+
           }
         },
         "Events": {

@@ -19,6 +19,7 @@
     <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.3.99" />
     <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.17.46" />
     <PackageReference Include="AWSSDK.SQS" Version="3.7.2.95" />
+    <PackageReference Include="Polly" Version="7.2.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />

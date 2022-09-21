@@ -13,6 +13,8 @@ using Amazon.SQS;
 using System.Text.Json;
 using Contracts;
 using Models;
+using Polly;
+using Polly.Retry;
 
 namespace SpiderRecordsAPI
 {
@@ -35,36 +37,6 @@ namespace SpiderRecordsAPI
                 throw new Exception("No Queue URL given in environment for lambda function");
             QueueURL = qenv;
         }
-
-        //public async Task Handler(SQSEvent messages, ILambdaContext context)
-        //{
-        //    var logger = context.Logger;
-        //    logger.LogError($"We're in the Handler of SpiderRecordWriteLambda - with {messages.Records.Count} messages.");
-        //    AmazonSQSClient sqsClient = new AmazonSQSClient();
-        //    int numMessages = messages.Records.Count;
-        //    int completed = 0;
-        //    foreach (var message in messages.Records)
-        //    {
-        //        var done = await HandleMessage(message, logger);
-        //        if (done)
-        //        {
-        //            logger.LogError($"Event source: {message.EventSource}");
-        //            logger.LogError($"Event source Arn: {message.EventSourceArn}");
-        //            var deleteResponse = await sqsClient.DeleteMessageAsync(QueueURL, message.ReceiptHandle);
-        //            if (deleteResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
-        //            {
-        //                completed++;
-        //            }
-        //            else
-        //            {
-        //                logger.LogError($"Removing message from SQS Queue {message.EventSource} failed.");
-        //            }
-        //        }
-        //    }
-
-        //    logger.LogInformation($"Passed {numMessages} messages, completed {completed}");
-        //    await Task.CompletedTask;
-        //}
 
         public async Task<SQSBatchResponse> BatchHandler(SQSEvent messages, ILambdaContext context)
         {
@@ -116,13 +88,24 @@ namespace SpiderRecordsAPI
             attrs.Add("DateAdded", new AttributeValue(speciesRecord.Record.DateAdded));
             attrs.Add("DateRecorded", new AttributeValue(speciesRecord.Record.DateRecorded));
 
-            var dbResponse = await DBClient.PutItemAsync(DBName, attrs);
-            if (dbResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
+            // I made this global at first - but it kind of documents what's happening in the line beloe
+            // so moved it into the method.  
+            Policy DBPolicy = Policy.Handle<ProvisionedThroughputExceededException>()
+                                    .Or<RequestLimitExceededException>()
+                                    .WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+            try
             {
-                logger.LogError($"Failed to write record {speciesRecord.Id} to database - will try again as per SQS retries.");
-                logger.LogError($"{dbResponse.HttpStatusCode}");
+                var dbResponse = await DBPolicy.Execute( () => DBClient.PutItemAsync(DBName, attrs));
             }
-            return true; // (dbResponse.HttpStatusCode == System.Net.HttpStatusCode.OK);
+            catch (Exception ex) {
+                logger.LogError(ex.ToString());
+                return false;
+            }
+
+            // I think, if we get this far, without an exception, we're ok.
+            // Of course, the lambda may have timed out by now.
+            return true;
         }
     }
 }
