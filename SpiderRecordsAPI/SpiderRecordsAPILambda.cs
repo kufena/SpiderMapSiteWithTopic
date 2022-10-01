@@ -149,22 +149,21 @@ public class SpiderRecordsAPILambda
 
     private async Task<SpeciesRecordWithId> RetrieveFromDB(string guid, ILambdaLogger logger) 
     {
+        logger.LogDebug($"The table name we are looking in is {TableName}");
+        logger.LogDebug($"The guid we're looking up is {guid}");
+
         var key = new Dictionary<string, AttributeValue>();
         key.Add("Guid", new AttributeValue(guid));
         GetItemResponse p = await DBClient.GetItemAsync(TableName, key);
+        
         if (p.HttpStatusCode == HttpStatusCode.OK) {
             if (!p.IsItemSet)
             {
                 logger.LogError("No Item Set returned from get item???");
-                logger.LogError($"{p.ToString()}");
                 throw new Exception("No item set returned from get item");
             }
-            logger.LogError($"No of items = {p.Item.Count}");
+            logger.LogDebug($"No of items = {p.Item.Count}");
             var items = p.Item;
-            foreach (var (k, v) in items)
-            {
-                logger.LogError($"{k} == {v.S}");
-            }
             return new SpeciesRecordWithId(guid, new SpeciesRecord(
                 items["DateRecorded"].S,
                 items["DateAdded"].S,
