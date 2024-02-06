@@ -1,0 +1,145 @@
+Regionally Extinct
+Theridiidae Dipoena coracina (C.L.Koch, 1837)
+Araneidae Gibbaranea bituberculata (Walckenaer, 1802)
+Dictynidae Mastigusa arietina (Thorell, 1871)
+
+Critically Endangered (Possibly Extinct)
+Oonopidae Orchestina sp.
+Linyphiidae Centromerus albidus Simon, 1929
+Linyphiidae Palliduphantes antroniensis (Schenkel, 1933)
+Dictynidae Altella lucida (Simon, 1874)
+Philodromidae Thanatus formicinus (Clerk, 1757)
+
+Critically Endangered
+Theridiidae Enoplognatha oelandica (Thorell, 1875)
+Theridiidae Robertus scoticus Jackson, 1914
+Linyphiidae Walckenaeria corniculans (Cambridge, 1875)
+Linyphiidae Diplocephalus connatus Bertkau, 1889
+Linyphiidae Typhochrestus simoni de Lessert, 1907
+Lycosidae Alopecosa fabrilis (Clerck, 1757)
+Lycosidae Aulonia albimana (Walckenaer, 1805)
+Dictynidae Dictyna major Menge, 1869
+Zoridae Zora armillata Simon, 1878
+Zoridae Zora silvestris Kulczynski, 1897
+Thomisidae Pistius truncatus (Pallas, 1772)
+Salticidae Neon valentulus Falconer, 1912
+Salticidae Sitticus distinguendus (Simon, 1868)
+
+Endangered
+Theridiidae Dipoena prona (Menge, 1868)
+Theridiidae Dipoena melanogaster (C.L.Koch, 1837)
+Linyphiidae Praestigia duffeyi (Millidge, 1954)
+Linyphiidae Gonatium paradoxum (L.Koch, 1869)
+Linyphiidae Pelecopsis radicicola (L.Koch, 1872)
+Linyphiidae Tapinocyba mitis (O.P.-Cambridge, 1882)
+Linyphiidae Erigone welchi Jackson, 1911
+Linyphiidae Trichopterna cito (O.P.-Cambridge, 1872)
+Linyphiidae Semljicola caliginosus (Falconer, 1910)
+Linyphiidae Wiehlea calcarifera (Simon, 1884)
+Linyphiidae Maro sublestus Falconer, 1915
+Linyphiidae Maro lepidus Casemir, 1961
+Linyphiidae Centromerus levitarsis (Simon, 1884)
+Linyphiidae Centromerus semiater (L.Koch, 1879)
+Linyphiidae Centromerus brevivulvatus Dahl, 1912
+Linyphiidae Centromerus serratus (O.P.-Cambridge, 1875)
+Linyphiidae Nothophantes horridus Merrett and Stevens, 1995
+Linyphiidae Midia midas (Simon, 1884)
+Araneidae Araniella alpica (L.Koch, 1869)
+Lycosidae Pardosa paludicola (Clerck, 1757)
+Lycosidae Hygrolycosa rubrofasciata (Ohlert, 1865)
+Dictynidae Tuberta maerens (O.P.-Cambridge, 1863)
+Liocranidae Agroeca lusatica (L.Koch, 1875)
+Liocranidae Scotina palliardii (L.Koch, 1881)
+Clubionidae Cheiracanthium pennyi O.P.-Cambridge, 1873
+Gnaphosidae Haplodrassus soerenseni (Strand, 1900)
+Thomisidae Xysticus luctator L.Koch, 1870
+Thomisidae Xysticus luctuosus (Blackwall, 1836)
+Thomisidae Xysticus robustus (Hahn, 1832)
+Thomisidae Ozyptila blackwalli Simon, 1875
+
+Vulnerable
+Dysderidae Harpactea rubicunda (C.L.Koch, 1838)
+Eresidae Eresus sandaliatus (Martini and Goeze, 1778)
+Theridiidae Dipoena erythropus (Simon, 1881)
+Theridiidae Enoplognatha tecta (Keyserling, 1884)
+Linyphiidae Walckenaeria mitrata (Menge, 1868)
+Linyphiidae Walckenaeria stylifrons (O.P.-Cambridge, 1875)
+Linyphiidae Dismodicus elevatus (C.L.Koch, 1838)
+Linyphiidae Baryphyma gowerense (Locket, 1965)
+Linyphiidae Silometopus incurvatus (O.P.-Cambridge, 1873)
+Linyphiidae Trichoncus saxicola (O.P.-Cambridge, 1861)
+Linyphiidae Trichoncus hackmani Millidge, 1955
+Linyphiidae Gongylidiellum murcidum Simon, 1884
+Linyphiidae Glyphesis cottonae (La Touche, 1945)
+Linyphiidae Diplocephalus protuberans (O.P.-Cambridge, 1875)
+Linyphiidae Wabasso replicatus (Holm, 1950)
+Linyphiidae Mecynargus paetulus (O.P.-Cambridge, 1875)
+Linyphiidae Hilaira nubigena Hull, 1911
+Linyphiidae Carorita limnaea (Crosby and Bishop, 1927)
+Linyphiidae Karita paludosa Duffey, 1971
+Linyphiidae Meioneta fuscipalpa (C.L.Koch, 1836)
+Araneidae Hypsosinga heri (Hahn, 1831)
+Lycosidae Pardosa trailli (O.P.-Cambridge, 1873)
+Lycosidae Trochosa robusta (Simon, 1876)
+Lycosidae Arctosa alpigena (Doleschall, 1852)
+Pisauridae Dolomedes plantarius (Clerck, 1757)
+Oxyopidae Oxyopes heterophthalmus Latreille, 1804
+Agelenidae Tegenaria picta Simon, 1870
+Hahniidae Hahnia candida Simon, 1875
+Dictynidae Mastigusa macrophthalma (Kulczynski, 1897)
+Dictynidae Lathys nielseni (Schenkel, 1932)
+Dictynidae Lathys stigmatisata (Menge, 1869)
+Liocranidae Apostenus fuscus Westring, 1851
+Clubionidae Clubiona rosserae Locket, 1953
+Clubionidae Clubiona caerulescens L.Koch, 1867
+Clubionidae Clubiona pseudoneglecta Wunderlich, 1994
+Zodariidae Zodarion vicinum Denis, 1935
+Zodariidae Zodarion fuscum (Simon, 1870)
+Gnaphosidae Phaeocedus braccatus (L.Koch, 1866)
+Gnaphosidae Zelotes longipes (Simon, 1878)
+Gnaphosidae Gnaphosa lugubris (C.L.Koch, 1839)
+Gnaphosidae Gnaphosa nigerrima L.Koch, 1877
+Gnaphosidae Callilepis nocturna (Linnaeus, 1758)
+Gnaphosidae Micaria albovittata (L.Koch, 1866)
+Gnaphosidae Micaria alpina L.Koch, 1872
+Zoridae Zora nemoralis (Blackwall, 1861)
+Philodromidae Philodromus fallax Sundevall, 1833
+Philodromidae Philodromus emarginatus (Schrank, 1803)
+Thomisidae Ozyptila pullata (Thorell, 1875)
+Salticidae Heliophanus auratus C.L.Koch, 1835
+Salticidae Heliophanus dampfi Schenkel, 1923
+Salticidae Marpissa radiata (Grube, 1859)
+Salticidae Euophrys herbigrada (Simon, 1871)
+Salticidae Talavera thorelli (Kulczynski, 1891)
+Salticidae Pellenes tripunctatus (Walckenaer, 1802)
+
+Near Threatened
+Uloboridae Uloborus walckenaerius Latreille, 1806
+Theridiidae Dipoena torva (Thorell, 1875)
+Linyphiidae Baryphyma maritimum (Crocker and Parker, 1970)
+Linyphiidae Pelecopsis elongata (Wider, 1834)
+Linyphiidae Acartauchenius scurrilis (O.P.-Cambridge, 1872)
+Linyphiidae Glyphesis servulus (Simon, 1881)
+Linyphiidae Erigone psychrophila Thorell, 1871
+Linyphiidae Caviphantes saxetorum (Hull, 1916)
+Linyphiidae Centromerus capucinus (Simon, 1884)
+Linyphiidae Centromerus cavernarum (L.Koch, 1872)
+Linyphiidae Improphantes complicatus (Emerton, 1882)
+Linyphiidae Neriene radiata (Walckenaer, 1841)
+Linyphiidae Porrhomma rosenhaueri (L.Koch, 1872)
+Linyphiidae Meioneta mollis (O. P.-Cambridge, 1871)
+Araneidae Araniella displicata (Hentz, 1847)
+Araneidae Stroemiellus stroemi (Thorell, 1870)
+Lycosidae Arctosa fulvolineata (Lucas, 1846)
+Liocranidae Agroeca cuprea Menge, 1873
+Clubionidae Clubiona subsultans Thorell, 1875
+Clubionidae Clubiona frisia Wunderlich and Schott, 1995
+Clubionidae Clubiona juvenis Simon, 1878
+Clubionidae Clubiona genevensis L.Koch, 1866
+Gnaphosidae Gnaphosa occidentalis Simon, 1878
+Gnaphosidae Micaria silesiaca L.Koch, 1875
+Philodromidae Philodromus margaritatus (Clerck, 1757)
+Salticidae Sitticus floricola (C.L.Koch, 1837)
+Salticidae Talavera petrensis (C.L.Koch, 1837)
+Salticidae Phlegra fasciata (Hahn, 1826)
+Salticidae Neon pictus Kulczynski, 1891 
